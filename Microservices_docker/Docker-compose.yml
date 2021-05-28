@@ -1,0 +1,40 @@
+version: '3.7'
+services: 
+   
+    eureka-discovery-server:
+        image: parnamondal/eureka-discovery-server:v1
+        ports: 
+            - "8761:8761"
+        restart: always
+       
+        networks:
+            - app-network
+    
+    menuitem-service:
+        image: parnamondal/menuitem-service:v1
+        ports: 
+            - "8900:8900"
+        restart: always
+        environment:
+            EUREKA_HOST: eureka-discovery-server
+                
+        depends_on:
+            - eureka-discovery-server
+        networks:
+            - app-network
+
+    zuul-gateway:
+        image: parnamondal/zuul-gateway:v1
+        ports: 
+            - "8028:8028"
+        restart: always
+        environment:
+            EUREKA_HOST: eureka-discovery-server
+        depends_on:
+            - eureka-discovery-server
+        networks:
+            - app-network
+ 
+# Networks to be created to facilitate communication between containers
+networks:
+    app-network:
